@@ -10,21 +10,13 @@
 		A527EDC11B527FD000CA3DAF /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D051B51A44C00929105 /* crypt.h */; };
 		A527EDC21B527FD000CA3DAF /* ioapi.c in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D061B51A44C00929105 /* ioapi.c */; };
 		A527EDC31B527FD000CA3DAF /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D071B51A44C00929105 /* ioapi.h */; };
-		A527EDC41B527FD000CA3DAF /* mztools.c in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D081B51A44C00929105 /* mztools.c */; };
-		A527EDC51B527FD000CA3DAF /* mztools.h in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D091B51A44C00929105 /* mztools.h */; };
 		A527EDC61B527FD000CA3DAF /* unzip.c in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D0A1B51A44C00929105 /* unzip.c */; };
 		A527EDC71B527FD000CA3DAF /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D0B1B51A44C00929105 /* unzip.h */; };
-		A527EDC81B527FD000CA3DAF /* zip.c in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D0C1B51A44C00929105 /* zip.c */; };
-		A527EDC91B527FD000CA3DAF /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = A5D15D0D1B51A44C00929105 /* zip.h */; };
 		A527EDCA1B52804E00CA3DAF /* crypt.h in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D051B51A44C00929105 /* crypt.h */; };
 		A527EDCB1B52804E00CA3DAF /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D061B51A44C00929105 /* ioapi.c */; };
 		A527EDCC1B52804E00CA3DAF /* ioapi.h in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D071B51A44C00929105 /* ioapi.h */; };
-		A527EDCD1B52804E00CA3DAF /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D081B51A44C00929105 /* mztools.c */; };
-		A527EDCE1B52804E00CA3DAF /* mztools.h in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D091B51A44C00929105 /* mztools.h */; };
 		A527EDCF1B52804E00CA3DAF /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D0A1B51A44C00929105 /* unzip.c */; };
 		A527EDD01B52804E00CA3DAF /* unzip.h in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D0B1B51A44C00929105 /* unzip.h */; };
-		A527EDD11B52804E00CA3DAF /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D0C1B51A44C00929105 /* zip.c */; };
-		A527EDD21B52804E00CA3DAF /* zip.h in Sources */ = {isa = PBXBuildFile; fileRef = A5D15D0D1B51A44C00929105 /* zip.h */; };
 		A527EDD41B52806D00CA3DAF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A527EDD31B52806D00CA3DAF /* libz.dylib */; };
 		A527EDD91B52809700CA3DAF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A527EDD71B52808900CA3DAF /* Foundation.framework */; };
 		A527EDDA1B52809700CA3DAF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A527EDD51B52808400CA3DAF /* CoreGraphics.framework */; };
@@ -93,12 +85,8 @@
 		A5D15D051B51A44C00929105 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypt.h; path = minizip/crypt.h; sourceTree = "<group>"; };
 		A5D15D061B51A44C00929105 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ioapi.c; path = minizip/ioapi.c; sourceTree = "<group>"; };
 		A5D15D071B51A44C00929105 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ioapi.h; path = minizip/ioapi.h; sourceTree = "<group>"; };
-		A5D15D081B51A44C00929105 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mztools.c; path = minizip/mztools.c; sourceTree = "<group>"; };
-		A5D15D091B51A44C00929105 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mztools.h; path = minizip/mztools.h; sourceTree = "<group>"; };
 		A5D15D0A1B51A44C00929105 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unzip.c; path = minizip/unzip.c; sourceTree = "<group>"; };
 		A5D15D0B1B51A44C00929105 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = minizip/unzip.h; sourceTree = "<group>"; };
-		A5D15D0C1B51A44C00929105 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zip.c; path = minizip/zip.c; sourceTree = "<group>"; };
-		A5D15D0D1B51A44C00929105 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = minizip/zip.h; sourceTree = "<group>"; };
 		A5D15D181B51A4D000929105 /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
 		A5D15D191B51A4D000929105 /* Main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
 		A5D15D1C1B51CD4C00929105 /* CollectingDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectingDelegate.h; sourceTree = "<group>"; };
@@ -253,12 +241,8 @@
 				A5D15D051B51A44C00929105 /* crypt.h */,
 				A5D15D061B51A44C00929105 /* ioapi.c */,
 				A5D15D071B51A44C00929105 /* ioapi.h */,
-				A5D15D081B51A44C00929105 /* mztools.c */,
-				A5D15D091B51A44C00929105 /* mztools.h */,
 				A5D15D0A1B51A44C00929105 /* unzip.c */,
 				A5D15D0B1B51A44C00929105 /* unzip.h */,
-				A5D15D0C1B51A44C00929105 /* zip.c */,
-				A5D15D0D1B51A44C00929105 /* zip.h */,
 			);
 			name = minizip;
 			sourceTree = "<group>";
@@ -305,12 +289,8 @@
 				A527EDC11B527FD000CA3DAF /* crypt.h in Headers */,
 				A527EDC21B527FD000CA3DAF /* ioapi.c in Headers */,
 				A527EDC31B527FD000CA3DAF /* ioapi.h in Headers */,
-				A527EDC41B527FD000CA3DAF /* mztools.c in Headers */,
-				A527EDC51B527FD000CA3DAF /* mztools.h in Headers */,
 				A527EDC61B527FD000CA3DAF /* unzip.c in Headers */,
 				A527EDC71B527FD000CA3DAF /* unzip.h in Headers */,
-				A527EDC81B527FD000CA3DAF /* zip.c in Headers */,
-				A527EDC91B527FD000CA3DAF /* zip.h in Headers */,
 				A5D15D451B51D64200929105 /* Main.m in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -463,12 +443,8 @@
 				A527EDCA1B52804E00CA3DAF /* crypt.h in Sources */,
 				A527EDCB1B52804E00CA3DAF /* ioapi.c in Sources */,
 				A527EDCC1B52804E00CA3DAF /* ioapi.h in Sources */,
-				A527EDCD1B52804E00CA3DAF /* mztools.c in Sources */,
-				A527EDCE1B52804E00CA3DAF /* mztools.h in Sources */,
 				A527EDCF1B52804E00CA3DAF /* unzip.c in Sources */,
 				A527EDD01B52804E00CA3DAF /* unzip.h in Sources */,
-				A527EDD11B52804E00CA3DAF /* zip.c in Sources */,
-				A527EDD21B52804E00CA3DAF /* zip.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

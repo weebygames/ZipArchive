@@ -61,56 +61,6 @@
     [[NSFileManager defaultManager] removeItemAtPath:[self _cachesPath:nil] error:nil];
 }
 
-- (void)testZipping {
-    // Use extracted files from [-testUnzipping]
-    NSString *inputPath = [self _cachesPath:@"Regular"];
-    NSArray *inputPaths = @[[inputPath stringByAppendingPathComponent:@"Readme.markdown"],
-                            [inputPath stringByAppendingPathComponent:@"LICENSE"]];
-    NSString *outputPath = [self _cachesPath:@"Zipped"];
-    NSString *archivePath = [outputPath stringByAppendingPathComponent:@"CreatedArchive.zip"];
-    
-    [Main createZipFileAtPath:archivePath
-             withFilesAtPaths:inputPaths];
-    
-    // TODO: - Make sure the files are actually unzipped. They are, but the test could be better.
-    XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:archivePath], @"Archive Created.");
-}
-
-- (void)testDirectoryZipping {
-    NSString *inputPath = [self _cachesPath:@"Unicode"];
-    NSString *outputPath = [self _cachesPath:@"FolderZipped"];
-    NSString *archivePath = [outputPath stringByAppendingPathComponent:@"ArchiveWithFolders.zip"];
-    
-    [Main createZipFileAtPath:archivePath
-      withContentsOfDirectory:inputPath];
-    
-    XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:archivePath], @"Folder Archive created");
-}
-
-- (void)testMultipleZipping {
-    NSArray *inputPaths = @[[[NSBundle mainBundle] pathForResource:@"0" ofType:@"m4a"],
-                            [[NSBundle mainBundle] pathForResource:@"1" ofType:@"m4a"],
-                            [[NSBundle mainBundle] pathForResource:@"2" ofType:@"m4a"],
-                            [[NSBundle mainBundle] pathForResource:@"3" ofType:@"m4a"],
-                            [[NSBundle mainBundle] pathForResource:@"4" ofType:@"m4a"],
-                            [[NSBundle mainBundle] pathForResource:@"5" ofType:@"m4a"],
-                            [[NSBundle mainBundle] pathForResource:@"6" ofType:@"m4a"],
-                            [[NSBundle mainBundle] pathForResource:@"7" ofType:@"m4a"]];
-    NSString *outputPath = [self _cachesPath:@"Zipped"];
-    
-    for (int test = 0; test < 1000; test++) {
-        NSString *archivePath = [outputPath stringByAppendingPathComponent:[NSString stringWithFormat:@"queue_test_%d.zip", test]];
-        
-        [Main createZipFileAtPath:archivePath
-                 withFilesAtPaths:inputPaths];
-        
-        long long threshold = 510000;
-        long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:archivePath error:nil][NSFileSize] longLongValue];
-        
-        XCTAssertTrue(fileSize > threshold, @"Zipping failed at %lld", fileSize);
-    }
-}
-
 - (void)testUnzipping {
     NSString *zipPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"TestArchive" ofType:@"zip"];
     NSString *outputPath = [self _cachesPath:@"Regular"];
@@ -249,53 +199,6 @@
     BOOL symbolicLinkToFilePersists = ((nil != symlinkFilePath) && [symlinkFilePath isEqualToString:testSymlinkFileTarget]) && (nil == error);
     
     XCTAssertTrue(symbolicLinkToFilePersists && symbolicLinkToFolderPersists, @"Relative symbolic links should persist from the original archive to the outputted files (and also remain relative).");
-}
-
-- (void)testZippingAndUnzippingForDate {
-    NSString *inputPath = [self _cachesPath:@"Regular"];
-    NSArray *inputPaths = @[[inputPath stringByAppendingPathComponent:@"Readme.markdown"]];
-    
-    NSDictionary *originalFileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[inputPath stringByAppendingPathComponent:@"Readme.markdown"] error:nil];
-    
-    NSString *outputPath = [self _cachesPath:@"ZippedDate"];
-    NSString *archivePath = [outputPath stringByAppendingPathComponent:@"CreatedArchive.zip"];
-    
-    [Main
-     createZipFileAtPath:archivePath
-     withFilesAtPaths:inputPaths];
-    
-    [Main unzipFileAtPath:archivePath
-            toDestination:outputPath
-                 delegate:self];
-    
-    NSDictionary *createdFileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[outputPath stringByAppendingPathComponent:@"Readme.markdown"] error:nil];
-    
-    XCTAssertEqualObjects(originalFileAttributes[NSFileCreationDate], createdFileAttributes[@"NSFileCreationDate"], @"Orginal file creationDate should match created one");
-}
-
-- (void)testZippingAndUnzippingForPermissions {
-    // File we're going to test permissions on before and after zipping
-    NSString *targetFile = @"/Contents/MacOS/TestProject";
-    
-    // ZIPPING
-    NSString *inputFile = [[NSBundle mainBundle] pathForResource:@"PermissionsTestApp" ofType:@"app"];
-    NSString *targetFilePreZipPath = [inputFile stringByAppendingPathComponent:targetFile];
-    NSDictionary *preZipAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:targetFilePreZipPath error:nil];
-    
-    NSString *outputDirectory = [self _cachesPath:@"PermissionsTest"];
-    NSString *archivePath = [outputDirectory stringByAppendingPathComponent:@"TestAppArchive.zip"];
-    
-    [Main createZipFileAtPath:archivePath
-      withContentsOfDirectory:inputFile];
-    
-    // UNZIPPING
-    [Main unzipFileAtPath:archivePath
-            toDestination:outputDirectory];
-    
-    NSString *targetFilePath = [outputDirectory stringByAppendingPathComponent:@"/Contents/MacOS/TestProject"];
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:targetFilePath error:nil];
-    
-    XCTAssertEqual(fileAttributes[NSFilePosixPermissions], preZipAttributes[NSFilePosixPermissions], @"File permissions should be retained during compression and de-compression");
 }
 
 - (void)testUnzippingWithCancel {

@@ -51,22 +51,6 @@
         progressHandler:(void (^)(NSString *entry, unz_file_info zipInfo, long entryNumber, long total))progressHandler
       completionHandler:(void (^)(NSString *path, BOOL succeeded, NSError *error))completionHandler;
 
-// Zip
-+ (BOOL)createZipFileAtPath:(NSString *)path
-           withFilesAtPaths:(NSArray *)paths;
-
-+ (BOOL)createZipFileAtPath:(NSString *)path
-    withContentsOfDirectory:(NSString *)directoryPath;
-
-+ (BOOL)createZipFileAtPath:(NSString *)path
-    withContentsOfDirectory:(NSString *)directoryPath
-        keepParentDirectory:(BOOL)keepParentDirectory;
-
-- (instancetype)initWithPath:(NSString *)path NS_DESIGNATED_INITIALIZER;
-
-@property (NS_NONATOMIC_IOSONLY, readonly) BOOL open;
-@property (NS_NONATOMIC_IOSONLY, readonly) BOOL close;
-
 @end
 
 @protocol ZipArchiveDelegate <NSObject>

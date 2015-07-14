@@ -7,7 +7,6 @@
 //
 
 #import "Main.h"
-#import "zip.h"
 #import "zlib.h"
 #import "zconf.h"
 #include <sys/stat.h>
@@ -21,11 +20,7 @@
 @end
 
 
-@implementation Main {
-    NSString *_path;
-    NSString *_fileName;
-    zipFile _zip;
-}
+@implementation Main
 
 #pragma mark - Unzipping
 + (BOOL)unzipFileAtPath:(NSString *)path
@@ -125,7 +120,7 @@
       completionHandler:(void (^)(NSString *path, BOOL succeeded, NSError *error))completionHandler {
     
     // Prepare Unzip Operations
-    zipFile zip = unzOpen((const char*)[path UTF8String]);
+    unzFile zip = unzOpen((const char*)[path UTF8String]);
     
     if (NULL == zip) {
         NSDictionary *userInformation = @{NSLocalizedDescriptionKey: @"Failed to unzip file"};
@@ -443,218 +438,6 @@
     }
     
     return success;
-}
-
-#pragma mark - Zipping
-+ (BOOL)createZipFileAtPath:(NSString *)path
-           withFilesAtPaths:(NSArray *)paths {
-    BOOL success = NO;
-    Main *zipArchive = [[Main alloc] initWithPath:path];
-    
-    if ([zipArchive open]) {
-        for (NSString *filePath in paths) {
-            [zipArchive writeFile:filePath];
-        }
-        
-        success = [zipArchive close];
-    }
-    
-    return  success;
-}
-
-+ (BOOL)createZipFileAtPath:(NSString *)path
-    withContentsOfDirectory:(NSString *)directoryPath {
-    return [self createZipFileAtPath:path withContentsOfDirectory:directoryPath keepParentDirectory:NO];
-}
-
-+ (BOOL)createZipFileAtPath:(NSString *)path
-    withContentsOfDirectory:(NSString *)directoryPath
-        keepParentDirectory:(BOOL)keepParentDirectory {
-    BOOL success = NO;
-    NSFileManager *fileManager = nil;
-    Main *zipArchive = [[Main alloc] initWithPath:path];
-    
-    if ([zipArchive open]) {
-        // Use a local file manager (queue/thread compatibility)
-        fileManager = [[NSFileManager alloc] init];
-        
-        NSDirectoryEnumerator *directoryEnumerator = [fileManager enumeratorAtPath:directoryPath];
-        NSString *fileName;
-        
-        while ((fileName = [directoryEnumerator nextObject])) {
-            BOOL isDirectory;
-            NSString *fullFilePath = [directoryPath stringByAppendingPathComponent:fileName];
-            [fileManager fileExistsAtPath:fullFilePath isDirectory:&isDirectory];
-            
-            if (!isDirectory) {
-                if (keepParentDirectory) {
-                    fileName = [[directoryPath lastPathComponent] stringByAppendingPathComponent:fileName];
-                }
-                
-                [zipArchive writeFileAtPath:fullFilePath withFileName:fileName];
-            } else {
-                if (0 == [[NSFileManager defaultManager] subpathsOfDirectoryAtPath:fullFilePath error:nil].count) {
-                    NSString *temporaryName = [fullFilePath stringByAppendingPathComponent:@".DS_Store"];
-                    [@"" writeToFile:temporaryName atomically:YES encoding:NSUTF8StringEncoding error:nil];
-                    [zipArchive writeFileAtPath:temporaryName withFileName:[fileName stringByAppendingPathComponent:@".DS_Store"]];
-                    [[NSFileManager defaultManager] removeItemAtPath:temporaryName error:nil];
-                }
-            }
-        }
-        
-        success = [zipArchive close];
-    }
-    
-    return success;
-}
-
-- (instancetype)initWithPath:(NSString *)path {
-    if ((self = [super init])) {
-        _path = [path copy];
-    }
-    
-    return self;
-}
-
-- (BOOL)open {
-    NSAssert((NULL == _zip), @"Attempting to open an archive which has already been opened.");
-    _zip = zipOpen([_path UTF8String], APPEND_STATUS_CREATE);
-    
-    return (NULL != _zip);
-}
-
-- (void)zipInformation:(zip_fileinfo *)zipInformation setDate:(NSDate *)date {
-    NSCalendar *currentCalendar = [NSCalendar currentCalendar];
-    
-#if defined(__IPHONE_8_0) || defined(__MAC_10_10)
-    uint flags = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
-#else
-    uint flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
-#endif
-    
-    NSDateComponents *components = [currentCalendar components:flags fromDate:date];
-    zipInformation -> tmz_date.tm_sec = (unsigned int)components.second;
-    zipInformation -> tmz_date.tm_min = (unsigned int)components.minute;
-    zipInformation -> tmz_date.tm_hour = (unsigned int)components.hour;
-    zipInformation -> tmz_date.tm_mday = (unsigned int)components.day;
-    zipInformation -> tmz_date.tm_mon = (unsigned int)components.month - 1;
-    zipInformation -> tmz_date.tm_year = (unsigned int)components.year;
-}
-
-- (BOOL)writeFolderAtPath:(NSString *)path withFolderName:(NSString *)folderName {
-    NSAssert((NULL != _zip), @"Attempting to write to an archive which has not been unzipped.");
-    zip_fileinfo zipInformation = {{0}};
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
-    
-    if (attributes) {
-        NSDate *fileDate = (NSDate *)attributes[NSFileModificationDate];
-        
-        if (fileDate) {
-            [self zipInformation:&zipInformation setDate:fileDate];
-        }
-        
-        // Write permissions into the external attributes. See: http://unix.stackexchange.com/a/14727
-        // Get the permissions value from the files attributes
-        NSNumber *permissionsValue = (NSNumber *)attributes[NSFilePosixPermissions];
-        
-        if (permissionsValue) {
-            // Short -> Octal -> Long
-            short permissionsShort = permissionsValue.shortValue;
-            NSInteger permissionsOctal = 0100000 + permissionsShort;
-            uLong permissionsLong = @(permissionsOctal).unsignedLongValue;
-            zipInformation.external_fa = permissionsLong < 16L;
-        }
-    }
-    
-    unsigned int len = 0;
-    zipOpenNewFileInZip(_zip, [[folderName stringByAppendingString:@"/"] UTF8String], &zipInformation, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_NO_COMPRESSION);
-    zipWriteInFileInZip(_zip, &len, 0);
-    zipCloseFileInZip(_zip);
-    
-    return YES;
-}
-
-- (BOOL)writeFile:(NSString *)path {
-    return [self writeFileAtPath:path withFileName:nil];
-}
-
-// Supports writing files with logical folder/directory structure
-// `path` is the absolute path of teh file that will be compressed
-// `fileName` is the relative name of the file and how it is stored within the zip (IE: /folder/subfolder/foo.txt)
-- (BOOL)writeFileAtPath:(NSString *)path withFileName:(NSString *)fileName {
-    NSAssert((NULL != _zip), @"Attempting to write to an archive which was never unzipped.");
-    FILE *input = fopen([path UTF8String], "r");
-    
-    if (NULL == input) {
-        return NO;
-    }
-    
-    const char *aFileName;
-    if (!fileName) {
-        aFileName = [path.lastPathComponent UTF8String];
-    } else {
-        aFileName = [fileName UTF8String];
-    }
-    
-    zip_fileinfo zipInformation = {{0}};
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
-    
-    if (attributes) {
-        NSDate *fileDate = (NSDate *)attributes[NSFileModificationDate];
-        
-        if (fileDate) {
-            [self zipInformation:&zipInformation setDate:fileDate];
-        }
-        
-        // Write permissions into the external attributes. See: http://unix.stackexchange.com/a/14727
-        // Get the permissions value from the files attributes
-        NSNumber *permissionsValue = (NSNumber *)attributes[NSFilePosixPermissions];
-        if (permissionsValue) {
-            short permissionsShort = permissionsValue.shortValue;
-            NSInteger permissionsOctal = 0100000 + permissionsShort;
-            uLong permissionsLong = @(permissionsOctal).unsignedLongValue;
-            zipInformation.external_fa = permissionsLong << 16L;
-        }
-    }
-    
-    zipOpenNewFileInZip(_zip, aFileName, &zipInformation, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
-    void *buffer = malloc(CHUNK);
-    unsigned int len = 0;
-    
-    while (!feof(input)) {
-        len = (unsigned int) fread(buffer, 1, CHUNK, input);
-        zipWriteInFileInZip(_zip, buffer, len);
-    }
-    
-    zipCloseFileInZip(_zip);
-    free(buffer);
-
-    return YES;
-}
-
-- (BOOL)writeData:(NSData *)data fileName:(NSString *)fileName {
-    if (!_zip) {
-        return NO;
-    }
-    
-    if (!data) {
-        return NO;
-    }
-    
-    zip_fileinfo zipInformation = {{0,0,0,0,0,0},0,0,0};
-    [self zipInformation:&zipInformation setDate:[NSDate date]];
-    zipOpenNewFileInZip(_zip, [fileName UTF8String], &zipInformation, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
-    zipWriteInFileInZip(_zip, data.bytes, (unsigned int)data.length);
-    zipCloseFileInZip(_zip);
-    
-    return YES;
-}
-
-- (BOOL)close {
-    NSAssert((NULL != _zip), @"[ZipArchive] Attempting to close an archive that has never been opened.");
-    zipClose(_zip, NULL);
-    
-    return YES;
 }
 
 #pragma mark - Private
